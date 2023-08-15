@@ -1,0 +1,168 @@
+﻿@page "/graduate-programs"
+
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System;
+@using System.Text.Json;
+@using System.Text;
+<h2 class="text-center mb-4">Graduate Programs</h2>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Explore Graduate Programs</h4>
+                    <div class="form-group">
+                        <label for="LevelOfStudy">Level of Study</label>
+                        <select id="LevelOfStudy" @bind="selectedLevel" class="form-control">
+                            <option value="">Select Level</option>
+                            <option value="Masters">Master's Level</option>
+                            <option value="PhD">PhD Level</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="Program">Program</label>
+                        <select id="Program" @bind="selectedProgram" class="form-control" disabled="@string.IsNullOrEmpty(selectedLevel)">
+                            <option value="">Select Program</option>
+                            @foreach (var program in programs.Where(p => p.LevelOfStudy == selectedLevel))
+                            {
+                                <option value="@program.Name">@program.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="FacultyDivision">Faculty/Division</label>
+                        <select id="FacultyDivision" @bind="selectedFaculty" class="form-control" disabled="@string.IsNullOrEmpty(selectedProgram)">
+                            <option value="">Select Faculty/Division</option>
+                            @foreach (var faculty in faculties)
+                            {
+                                if (faculty.LevelOfStudy == selectedLevel && faculty.Program == selectedProgram)
+                                {
+                                    <option value="@faculty.Name">@faculty.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary"
+                    @onclick="EnrollInProgram"
+                            disabled="@(string.IsNullOrEmpty(selectedLevel) || string.IsNullOrEmpty(selectedProgram) || string.IsNullOrEmpty(selectedFaculty))">
+                        Enroll
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string selectedLevel;
+    private string selectedProgram;
+    private string selectedFaculty;
+
+    @inject NavigationManager NavigationManager
+
+    private List<GraduateProgram> programs = new List<GraduateProgram>
+    {
+        new GraduateProgram { Name = "Computer Science", LevelOfStudy = "Masters", Program = "Masters" },
+        new GraduateProgram { Name = "Engineering", LevelOfStudy = "Masters", Program = "Masters" },
+        new GraduateProgram { Name = "Biology", LevelOfStudy = "PhD", Program = "Doctorate" },
+        new GraduateProgram { Name = "Physics", LevelOfStudy = "PhD", Program = "Doctorate" },
+        new GraduateProgram { Name = "Mathematics", LevelOfStudy = "Masters", Program = "Masters" },
+        new GraduateProgram { Name = "Chemistry", LevelOfStudy = "PhD", Program = "Doctorate" },
+        new GraduateProgram { Name = "Economics", LevelOfStudy = "Masters", Program = "Masters" },
+        new GraduateProgram { Name = "Psychology", LevelOfStudy = "PhD", Program = "Doctorate" },
+        new GraduateProgram { Name = "Business Administration", LevelOfStudy = "Masters", Program = "Masters" },
+        new GraduateProgram { Name = "Literature", LevelOfStudy = "PhD", Program = "Doctorate" }
+    };
+
+    private List<FacultyDivision> faculties = new List<FacultyDivision>
+    {
+        new FacultyDivision { Name = "Information and Computer Sciences", LevelOfStudy = "Masters", Program = "Computer Science" },
+        new FacultyDivision { Name = "Engineering", LevelOfStudy = "Masters", Program = "Engineering" },
+        new FacultyDivision { Name = "Natural Sciences", LevelOfStudy = "PhD", Program = "Biology" },
+        new FacultyDivision { Name = "Natural Sciences", LevelOfStudy = "PhD", Program = "Physics" },
+        new FacultyDivision { Name = "Mathematics and Statistics", LevelOfStudy = "Masters", Program = "Mathematics" },
+        new FacultyDivision { Name = "Natural Sciences", LevelOfStudy = "PhD", Program = "Chemistry" },
+        new FacultyDivision { Name = "Social Sciences", LevelOfStudy = "Masters", Program = "Economics" },
+        new FacultyDivision { Name = "Social Sciences", LevelOfStudy = "PhD", Program = "Psychology" },
+        new FacultyDivision { Name = "Business and Management", LevelOfStudy = "Masters", Program = "Business Administration" },
+        new FacultyDivision { Name = "Languages and Literature", LevelOfStudy = "PhD", Program = "Literature" },
+        new FacultyDivision { Name = "Arts", LevelOfStudy = "Masters", Program = "Computer Science" },
+        new FacultyDivision { Name = "Education", LevelOfStudy = "Masters", Program = "Computer Science" },
+        new FacultyDivision { Name = "Health Sciences", LevelOfStudy = "PhD", Program = "Biology" },
+        new FacultyDivision { Name = "Environmental Sciences", LevelOfStudy = "PhD", Program = "Biology" },
+        new FacultyDivision { Name = "Applied Mathematics", LevelOfStudy = "Masters", Program = "Mathematics" },
+        new FacultyDivision { Name = "Chemical Sciences", LevelOfStudy = "PhD", Program = "Chemistry" },
+        new FacultyDivision { Name = "Public Policy", LevelOfStudy = "Masters", Program = "Economics" },
+        new FacultyDivision { Name = "Counseling Psychology", LevelOfStudy = "PhD", Program = "Psychology" },
+        new FacultyDivision { Name = "Business Ethics", LevelOfStudy = "Masters", Program = "Business Administration" },
+        new FacultyDivision { Name = "Linguistics", LevelOfStudy = "PhD", Program = "Literature" }
+    };
+
+    public class GraduateProgram
+    {
+        public string Name { get; set; }
+        public string LevelOfStudy { get; set; }
+        public string Program { get; set; }
+    }
+
+    public class FacultyDivision
+    {
+        public string Name { get; set; }
+        public string LevelOfStudy { get; set; }
+        public string Program { get; set; }
+    }
+
+    public class UpdateGraduateProgramDto
+    {
+        public string Email { get; set; }
+        public string LevelOfStudy { get; set; }
+        public string Program { get; set; }
+        public string FacultyDivision { get; set; }
+    }
+
+    private async Task EnrollInProgram()
+    {
+        try
+        {
+            var httpClient = new HttpClient();
+
+            var userEmail = NavigationManager.Uri.Split('?')
+                .LastOrDefault()?.Split('=')?.LastOrDefault();
+
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return;
+            }
+
+            var programInfo = new UpdateGraduateProgramDto
+                {
+                    Email = userEmail,
+                    LevelOfStudy = selectedLevel,
+                    Program = selectedProgram,
+                    FacultyDivision = selectedFaculty
+                };
+
+            var json = JsonSerializer.Serialize(programInfo);
+
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync("https://localhost:44305/api/Auth/update-graduate-program", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Graduate program information updated successfully");
+                NavigationManager.NavigateTo($"/dashboard?email={userEmail}");
+            }
+            else
+            {
+                Console.WriteLine("Request failed with status: " + response.StatusCode);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("An error occurred: " + ex.Message);
+        }
+    }
+}

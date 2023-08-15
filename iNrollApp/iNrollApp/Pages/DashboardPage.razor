@@ -1,0 +1,89 @@
+﻿@page "/dashboard"
+@using Microsoft.AspNetCore.Components
+@using System.Net.Http.Json
+
+<h2 class="text-center mb-4">Dashboard</h2>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    @if (userData != null)
+                    {
+                        <h3>Welcome to the Dashboard, @userData.FirstName!</h3>
+                        <p><strong>Email:</strong> @userData.Email</p>
+                        <p><strong>Birthdate:</strong> @userData.Birthdate.ToShortDateString()</p>
+                        <p><strong>Level of Study:</strong> @userData.LevelOfStudy</p>
+                        <p><strong>Program:</strong> @userData.Program</p>
+                        <p><strong>Faculty Division:</strong> @userData.FacultyDivision</p>
+                        @if (!string.IsNullOrEmpty(userData.Photo))
+                        {
+                            <p><strong>Photo:</strong></p>
+                            <img src="@($"data:image/jpeg;base64,{userData.Photo}")" alt="User Photo" />
+                        }
+                        <div class="logout-button">
+                            <button type="button" class="btn btn-primary" @onclick="Logout">Logout</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <p>Loading user data...</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private UserDataModel userData;
+
+    @inject NavigationManager NavigationManager
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpClient = new HttpClient();
+
+        var userEmail = NavigationManager.ToAbsoluteUri(NavigationManager.Uri).Query
+            .Split('?').LastOrDefault()?.Split('=').LastOrDefault();
+
+        if (string.IsNullOrEmpty(userEmail))
+        {
+            return;
+        }
+        try
+        {
+            var response = await httpClient.GetAsync($"https://localhost:44305/api/Auth/get-user-data?email={userEmail}");
+            if (response.IsSuccessStatusCode)
+            {
+                userData = await response.Content.ReadFromJsonAsync<UserDataModel>();
+            }
+            else
+            {
+                Console.WriteLine("Request failed with status: " + response.StatusCode);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("An error occurred: " + ex.Message);
+        }
+    }
+
+    private void Logout()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    public class UserDataModel
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public DateTime Birthdate { get; set; }
+        public string LevelOfStudy { get; set; }
+        public string Program { get; set; }
+        public string FacultyDivision { get; set; }
+        public string Photo { get; set; }
+    }
+}

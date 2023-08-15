@@ -1,0 +1,331 @@
+﻿@page "/"
+@layout MainLayout
+
+<style>
+    /* Add your custom styles here to match the cam.ac.uk website */
+    .hero {
+        background-image: url('images/cambridge-hero-bg.jpg');
+        background-size: cover;
+        background-position: center;
+        color: #fff;
+        text-align: center;
+        padding: 150px 0;
+    }
+
+    .hero-title {
+        font-size: 36px;
+        margin-bottom: 20px;
+        color: #3A6EA5;
+    }
+
+    .hero-subtitle {
+        font-size: 24px;
+        color: #3A6EA5;
+    }
+
+    .features {
+        background-color: #f7f7f7;
+        padding: 50px 0;
+        text-align: center;
+    }
+
+    .feature-title {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .feature-description {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .programs {
+        padding: 50px 0;
+    }
+
+    .tab-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .tab {
+        padding: 10px 20px;
+        background-color: #f7f7f7;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+        transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    }
+
+        .tab.active {
+            background-color: #003b49;
+            color: #fff;
+        }
+
+    .footer {
+        background-color: #003b49;
+        color: #fff;
+        padding: 20px 0;
+        text-align: center;
+    }
+
+        .footer .footer-link {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+    .logo-container {
+        text-align: center;
+        padding: 20px;
+        background-color: #3A6EA5; /* Thiqah's primary color */
+    }
+
+    .logo {
+        width: 100px;
+        height: auto;
+    }
+
+    .university-name {
+        color: #3A6EA5; /* Thiqah's primary color */
+        font-size: 24px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .button {
+        display: inline-block;
+        padding: 12px 24px;
+        font-size: 18px;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    }
+
+    .button-primary {
+        background-color: #003b49;
+        color: #fff;
+        border: none;
+    }
+
+    .button-secondary {
+        background-color: #f7f7f7;
+        color: #003b49;
+        border: 1px solid #003b49;
+    }
+
+    .button:hover {
+        background-color: #3498db;
+        color: #fff;
+    }
+
+    .program-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .program-card {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 4px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .program-title {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #003b49;
+    }
+
+    .program-level {
+        font-size: 18px;
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .program-description {
+        font-size: 16px;
+        margin-bottom: 20px;
+        color: #555;
+    }
+</style>
+
+<script>
+    function SelectTab(tab) {
+        var tabs = document.getElementsByClassName('tab');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].classList.remove('active');
+        }
+
+        var programTabs = document.getElementsByClassName('program-tab');
+        for (var j = 0; j < programTabs.length; j++) {
+            programTabs[j].style.display = 'none';
+        }
+
+        document.getElementById(tab).classList.add('active');
+        document.getElementById(tab).style.display = 'block';
+    }
+</script>
+
+<div class="hero">
+    <div class="container">
+        <h1 class="hero-title">Empowering Minds, Enriching Lives</h1>
+        <p class="hero-subtitle">Experience Education at its Best</p>
+        <div class="hero-buttons">
+            <a href="/RegisterPage" class="button button-primary">Register</a>
+            <a href="/login" class="button button-secondary">Login</a>
+        </div>
+    </div>
+</div>
+
+
+<div class="features">
+    <div class="container">
+        <div class="feature-box">
+            <div class="feature-icon">🎓</div>
+            <div class="feature-title">World-Class Education</div>
+            <div class="feature-description">Join a community of scholars dedicated to excellence and innovation.</div>
+        </div>
+        <div class="feature-box">
+            <div class="feature-icon">🌍</div>
+            <div class="feature-title">Global Impact</div>
+            <div class="feature-description">Collaborate on research that addresses the world's most pressing challenges.</div>
+        </div>
+        <div class="feature-box">
+            <div class="feature-icon">🔬</div>
+            <div class="feature-title">Cutting-Edge Research</div>
+            <div class="feature-description">Push the boundaries of knowledge and discovery in diverse fields.</div>
+        </div>
+    </div>
+</div>
+
+<div class="programs">
+    <div class="container">
+        <div class="tab-container">
+            <div class="tab @(selectedTab == "masters" ? "active" : "")" onclick="SelectTab('masters')">Masters</div>
+            <div class="tab @(selectedTab == "phd" ? "active" : "")" onclick="SelectTab('phd')">PhD</div>
+        </div>
+
+        <div id="masters" class="program-tab @(selectedTab == "masters" ? "active" : "")">
+            <div class="program-grid">
+                @foreach (var faculty in faculties)
+                {
+                    if (faculty.LevelOfStudy == "Masters")
+                    {
+                        <div class="program-card">
+                            <h2 class="program-title">@faculty.Name</h2>
+                            <h3 class="program-level">Graduate Degree</h3>
+                            <p class="program-description">@faculty.Program</p>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <div id="phd" class="program-tab @(selectedTab == "phd" ? "active" : "")" style="display: none;">
+            <div class="program-grid">
+                @foreach (var faculty in faculties)
+                {
+                    if (faculty.LevelOfStudy == "PhD")
+                    {
+                        <div class="program-card">
+                            <h2 class="program-title">@faculty.Name</h2>
+                            <h3 class="program-level">Doctoral Degree</h3>
+                            <p class="program-description">@faculty.Program</p>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="footer">
+    <div class="container">
+        <a class="footer-link" href="#">About</a>
+        <a class="footer-link" href="#">Admissions</a>
+        <a class="footer-link" href="#">Research</a>
+        <a class="footer-link" href="#">Contact</a>
+    </div>
+</div>
+
+@code {
+    private List<GraduateProgram> programs = new List<GraduateProgram>
+{
+    new GraduateProgram { Name = "Computer Science", LevelOfStudy = "Masters", Program = "Masters" },
+    new GraduateProgram { Name = "Engineering", LevelOfStudy = "Masters", Program = "Masters" },
+    new GraduateProgram { Name = "Biology", LevelOfStudy = "PhD", Program = "Doctorate" },
+    new GraduateProgram { Name = "Physics", LevelOfStudy = "PhD", Program = "Doctorate" },
+    new GraduateProgram { Name = "Mathematics", LevelOfStudy = "Masters", Program = "Masters" },
+    new GraduateProgram { Name = "Chemistry", LevelOfStudy = "PhD", Program = "Doctorate" },
+    new GraduateProgram { Name = "Economics", LevelOfStudy = "Masters", Program = "Masters" },
+    new GraduateProgram { Name = "Psychology", LevelOfStudy = "PhD", Program = "Doctorate" },
+    new GraduateProgram { Name = "Business Administration", LevelOfStudy = "Masters", Program = "Masters" },
+    new GraduateProgram { Name = "Literature", LevelOfStudy = "PhD", Program = "Doctorate" }
+};
+
+    private List<FacultyDivision> faculties = new List<FacultyDivision>
+{
+    new FacultyDivision { Name = "Information and Computer Sciences", LevelOfStudy = "Masters", Program = "Computer Science" },
+    new FacultyDivision { Name = "Engineering", LevelOfStudy = "Masters", Program = "Engineering" },
+    new FacultyDivision { Name = "Natural Sciences", LevelOfStudy = "PhD", Program = "Biology" },
+    new FacultyDivision { Name = "Natural Sciences", LevelOfStudy = "PhD", Program = "Physics" },
+    new FacultyDivision { Name = "Mathematics and Statistics", LevelOfStudy = "Masters", Program = "Mathematics" },
+    new FacultyDivision { Name = "Natural Sciences", LevelOfStudy = "PhD", Program = "Chemistry" },
+    new FacultyDivision { Name = "Social Sciences", LevelOfStudy = "Masters", Program = "Economics" },
+    new FacultyDivision { Name = "Social Sciences", LevelOfStudy = "PhD", Program = "Psychology" },
+    new FacultyDivision { Name = "Business and Management", LevelOfStudy = "Masters", Program = "Business Administration" },
+    new FacultyDivision { Name = "Languages and Literature", LevelOfStudy = "PhD", Program = "Literature" },
+    new FacultyDivision { Name = "Arts", LevelOfStudy = "Masters", Program = "Computer Science" },
+    new FacultyDivision { Name = "Education", LevelOfStudy = "Masters", Program = "Computer Science" },
+    new FacultyDivision { Name = "Health Sciences", LevelOfStudy = "PhD", Program = "Biology" },
+    new FacultyDivision { Name = "Environmental Sciences", LevelOfStudy = "PhD", Program = "Biology" },
+    new FacultyDivision { Name = "Applied Mathematics", LevelOfStudy = "Masters", Program = "Mathematics" },
+    new FacultyDivision { Name = "Chemical Sciences", LevelOfStudy = "PhD", Program = "Chemistry" },
+    new FacultyDivision { Name = "Public Policy", LevelOfStudy = "Masters", Program = "Economics" },
+    new FacultyDivision { Name = "Counseling Psychology", LevelOfStudy = "PhD", Program = "Psychology" },
+    new FacultyDivision { Name = "Business Ethics", LevelOfStudy = "Masters", Program = "Business Administration" },
+    new FacultyDivision { Name = "Linguistics", LevelOfStudy = "PhD", Program = "Literature" }
+};
+
+
+    private string selectedTab = "Masters";
+    private const string masters = "Masters";
+    private const string PhD = "PhD";
+
+
+    private void SelectTab(string tab)
+    {
+        selectedTab = tab;
+        StateHasChanged();
+    }
+
+    public class GraduateProgram
+    {
+        public string Name { get; set; }
+        public string LevelOfStudy { get; set; }
+        public string Program { get; set; }
+    }
+
+    public class FacultyDivision
+    {
+        public string Name { get; set; }
+        public string LevelOfStudy { get; set; }
+        public string Program { get; set; }
+    }
+
+    public class UpdateGraduateProgramDto
+    {
+        public string Email { get; set; }
+        public string LevelOfStudy { get; set; }
+        public string Program { get; set; }
+        public string FacultyDivision { get; set; }
+    }
+}
